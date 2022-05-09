@@ -1,16 +1,21 @@
 import logo from "./redux.png";
 import "./App.css";
-import { useState, useRef } from "react";
+import { useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import Populate from "./components/Populate";
 
 function App() {
-  const [params, setParams] = useState("");
   const inputRef = useRef();
+  const params = useSelector((state) => state.params);
+  const dispatch = useDispatch();
 
   const inputHandler = (e) => {
     e.preventDefault();
     const queryString = inputRef.current.value.replace(/\s+/g, "");
-    setParams(queryString);
+    dispatch({
+      type: "SETPARAM",
+      payload: queryString,
+    });
   };
 
   return (
@@ -41,7 +46,7 @@ function App() {
           <br />
           <input className="search" type="search" ref={inputRef} />
         </form>
-        <Populate params={params} />
+        <Populate />
       </main>
     </div>
   );

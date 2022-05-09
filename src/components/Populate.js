@@ -2,34 +2,35 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { FiExternalLink } from "react-icons/fi";
 import { BsFillStarFill } from "react-icons/bs";
+import { useSelector, useDispatch } from "react-redux";
 
-function Populate({ params }) {
-  const [data, setData] = useState([]);
+function Populate() {
+  const data = useSelector((state) => state.data);
+  const params = useSelector((state) => state.params);
+  const url = useSelector((state) => state.url);
+  const dispatch = useDispatch();
+
   const [isLoading, setIsLoading] = useState(false);
-  const [fetchUrl, setFetchUrl] = useState();
   const [flag, setFlag] = useState(false);
 
   useEffect(() => {
-    if (params) {
-      const newUrl = `https://api.github.com/users/${params}/repos?type=all&sort=updated`;
-      setFetchUrl(newUrl);
-      setFlag(false);
-    }
+    window.history.pushState({}, "", `?${params}`);
   }, [params]);
 
   useEffect(() => {
     fetchProfiles();
-  }, [fetchUrl]);
+  }, [url]);
 
   const fetchProfiles = async () => {
+    setFlag(false);
     setIsLoading(true);
     try {
-      const fetchedData = await fetch(fetchUrl);
+      const fetchedData = await fetch(url);
       const jsonData = await fetchedData.json();
       if (!Array.isArray(jsonData)) {
-        setData([]);
+        dispatch({ type: "SETDATA", payload: [] });
         setFlag(true);
-      } else setData(jsonData);
+      } else dispatch({ type: "SETDATA", payload: jsonData });
     } catch (error) {
       console.log("error:", error);
       setFlag(true);
